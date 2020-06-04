@@ -32,9 +32,24 @@ public class MainActivity extends AppCompatActivity {
         d.setText(x);
     }
 
+    public void button_ClearAll(View v)
+    {
+        displayText = "";
+        state = 0;
+        dotUsed = false;
+        numberOfDecimalPlaces = 0;
+        Result = 0;
+        num1 = 0;
+        num2 = 0;
+        operation = "";
+        updateDisplay("0");
+    }
+
     public void button_number(View v)
     {
-        Log.v("" + num1);
+        Log.v("Before Num1 = ",""+num1);
+        Log.v("Before Num2 = ",""+num2);
+        Log.v("Before Result = ",""+Result);
 
         int digit = 0;
 
@@ -76,12 +91,15 @@ public class MainActivity extends AppCompatActivity {
         {
             if(state == 0)
             {
-                num1 += (Math.pow(0.1,numberOfDecimalPlaces))*digit;
+                num1 += (Math.pow(0.1, numberOfDecimalPlaces))*digit;
             } else if (state == 1)
             {
-                num2 += (Math.pow(0.1,numberOfDecimalPlaces))*digit;
+                num2 += (Math.pow(0.1, numberOfDecimalPlaces))*digit;
             }
             numberOfDecimalPlaces += 1;
+            displayText  = displayText + digit;
+            this.updateDisplay(displayText);
+            return;
         }
 
         if(state == 0)
@@ -95,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
         displayText  = displayText + digit;
         this.updateDisplay(displayText);
+
+        Log.v("After Num1 = ",""+num1);
+        Log.v("After Num2 = ",""+num2);
+        Log.v("After Result = ",""+Result);
 
     }
 
@@ -146,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
             state = 1;
             displayText = "";
+            numberOfDecimalPlaces = 0;
             dotUsed = false;
             return;
         }
@@ -167,11 +190,28 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
+            switch (v.getId())
+            {
+                case R.id.bDiv:
+                    operation = "/";
+                    break;
+                case R.id.bPlus:
+                    operation = "+";
+                    break;
+                case R.id.bMinus:
+                    operation = "-";
+                    break;
+                case R.id.bMult:
+                    operation = "*";
+                    break;
+            }
+
             this.updateDisplay(""+num1);
             num2 = 0;
             displayText = "";
-            Result = 0;
+            Result = num1;
             dotUsed = false;
+            numberOfDecimalPlaces = 0;
 
         }
     }
@@ -180,8 +220,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void button_equal(View v)
     {
-        if(state == 1)
-        {
+
             switch (operation) {
                 case "+":
                     Result = num1 + num2;
@@ -195,12 +234,13 @@ public class MainActivity extends AppCompatActivity {
                 case "*":
                     Result = num1 * num2;
                     break;
+                default:
+                    Result = num1;
             }
-        }
 
         this.updateDisplay(""+Result);
         state = 0;
-        num1 = 0;
+        num1 = Result;
         num2 = 0;
         displayText = "";
         dotUsed = false;
