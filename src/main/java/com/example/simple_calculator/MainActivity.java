@@ -4,12 +4,13 @@ import java.lang.Math;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GLOBAL_CONSTS {
 
     String displayText = "";
     int state = 0;
@@ -24,6 +25,54 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Intent appDataIntent = getIntent();
+        num1 = appDataIntent.getDoubleExtra(intent_Extra_NUM1,0);
+        num2 = appDataIntent.getDoubleExtra(intent_Extra_NUM2,0);
+        Result =  appDataIntent.getDoubleExtra(intent_Extra_RESULT,0);
+        displayText = appDataIntent.getStringExtra(intent_Extra_DISPLAY);
+
+        if(displayText == null)
+            displayText = "";
+
+        TextView txtView = findViewById(R.id.display);
+        if(appDataIntent.getStringExtra(intent_Extra_CURRENT_DISPLAY) != null)
+            txtView.setText(appDataIntent.getStringExtra(intent_Extra_CURRENT_DISPLAY));
+        else
+            txtView.setText("0");
+
+        dotUsed = appDataIntent.getBooleanExtra(intent_Extra_DOTUSED, false);
+        numberOfDecimalPlaces = appDataIntent.getIntExtra(intent_Extra_NUM_DECIMAL_PLACES,0);
+        state = appDataIntent.getIntExtra(intent_Extra_STATE,0);
+        operation = appDataIntent.getStringExtra(intent_Extra_OPERATION);
+    }
+
+    public void OpenCreditButton(View view)
+    {
+        Intent i = new Intent(this, Credits.class);
+        startActivity(i);
+    }
+
+    public void DebugButton(View view)
+    {
+        Intent i = new Intent(this, Debug_Window.class);
+        i.putExtra(intent_Extra_NUM1, num1);
+        i.putExtra(intent_Extra_NUM2, num2);
+        i.putExtra(intent_Extra_DISPLAY, displayText);
+        i.putExtra(intent_Extra_DOTUSED, dotUsed);
+        i.putExtra(intent_Extra_RESULT, Result);
+        i.putExtra(intent_Extra_OPERATION, operation);
+        i.putExtra(intent_Extra_NUM_DECIMAL_PLACES, numberOfDecimalPlaces);
+        i.putExtra(intent_Extra_STATE, state);
+        TextView txtView = findViewById(R.id.display);
+        i.putExtra(intent_Extra_CURRENT_DISPLAY, txtView.getText());
+
+        startActivity(i);
     }
 
     private void updateDisplay(String x)
@@ -113,20 +162,23 @@ public class MainActivity extends AppCompatActivity {
 
         displayText  = displayText + digit;
         this.updateDisplay(displayText);
-
-        Log.v("After Num1 = ",""+num1);
-        Log.v("After Num2 = ",""+num2);
-        Log.v("After Result = ",""+Result);
-
     }
 
     public void button_0(View v)
     {
+        if(numberOfDecimalPlaces > 0)
+        {
+            numberOfDecimalPlaces += 1;
+            displayText  = displayText + '0';
+            this.updateDisplay(displayText);
+            return;
+        }
+
         if(state == 0){
-            num1 = (num1*10) + 1;
+            num1 = (num1*10);
         }
         else if(state == 1){
-            num2 = (num2*10) + 1;
+            num2 = (num2*10);
         }
 
         if(displayText.equals("0")) return;
