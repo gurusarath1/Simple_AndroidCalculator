@@ -1,14 +1,22 @@
 package com.example.simple_calculator;
 
 import java.lang.Math;
+import java.util.zip.Inflater;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements GLOBAL_CONSTS {
 
@@ -50,6 +58,60 @@ public class MainActivity extends AppCompatActivity implements GLOBAL_CONSTS {
         numberOfDecimalPlaces = appDataIntent.getIntExtra(intent_Extra_NUM_DECIMAL_PLACES,0);
         state = appDataIntent.getIntExtra(intent_Extra_STATE,0);
         operation = appDataIntent.getStringExtra(intent_Extra_OPERATION);
+
+        if(operation == null) operation = "";
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menuX) {
+        super.onCreateOptionsMenu(menuX);
+        MenuInflater menu_inf = getMenuInflater();
+        menu_inf.inflate(R.menu.menu1, menuX);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch(item.getItemId())
+        {
+            case R.id.debug_toast_menu:
+                Context context = getApplicationContext();
+                CharSequence text = "num1 = " + num1 +
+                    "\nnum2 = " + num2 +
+                    "\nResult = " + Result +
+                        "\nDisplay = " + displayText +
+                        "\nstate = " + state +
+                        "\ndotUsed = " +  dotUsed +
+                        "\nnumber of decimal places = " + numberOfDecimalPlaces +
+                        "\noperation = " + operation;
+
+                int duration = Toast.LENGTH_LONG;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                break;
+
+            case R.id.social_media_menu:
+                Context context2 = getApplicationContext();
+                CharSequence text2 = "Go to Credits activity to connect via social media";
+                int duration2 = Toast.LENGTH_SHORT;
+
+                Toast toast2 = Toast.makeText(context2, text2, duration2);
+                toast2.show();
+                break;
+
+            case R.id.debug_menu:
+                this.DebugButton(null);
+                break;
+            case R.id.credit_menu:
+                this.OpenCreditButton(null);
+                break;
+        }
+
+        return true;
     }
 
     public void OpenCreditButton(View view)
